@@ -1,0 +1,170 @@
+# ORGANIZATIONS
+Organizations:
+  - &Orderer
+    Name: Orderer
+    SkipAsForeign: false
+    ID: OrdererMSP
+    MSPDir: ../crypto-config/ordererOrganizations/bx.com/msp
+    Policies: &OrdererPolicies
+      Readers:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+      Writers:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+      Admins:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+      Endorsement:
+          Type: Signature
+          Rule: "OR('OrdererMSP.member')"
+
+  - &Hulk
+    Name: Hulk
+    ID: HulkMSP
+    MSPDir: ../crypto-config/peerOrganizations/hulk.bx.com/msp
+    Policies: &HulkPolicies
+        Readers:
+            Type: Signature
+            Rule: "OR('HulkMSP.admin', 'HulkMSP.peer', 'HulkMSP.client')"
+        Writers:
+            Type: Signature
+            Rule: "OR('HulkMSP.admin', 'HulkMSP.client')"
+        Admins:
+            Type: Signature
+            Rule: "OR('HulkMSP.admin')"
+        Endorsement:
+            Type: Signature
+            Rule: "OR('HulkMSP.peer')"
+    AnchorPeers:
+        - Host: 127.0.0.1
+          Port: 7051
+
+  - &Ironman
+    Name: Ironman
+    ID: IronmanMSP
+    MSPDir: ../crypto-config/peerOrganizations/ironman.bx.com/msp
+    Policies: &IronmanPolicies
+        Readers:
+            Type: Signature
+            Rule: "OR('IronmanMSP.admin', 'IronmanMSP.peer', 'IronmanMSP.client')"
+        Writers:
+            Type: Signature
+            Rule: "OR('IronmanMSP.admin', 'IronmanMSP.client')"
+        Admins:
+            Type: Signature
+            Rule: "OR('IronmanMSP.admin')"
+        Endorsement:
+            Type: Signature
+            Rule: "OR('IronmanMSP.peer')"
+    AnchorPeers:
+        - Host: 127.0.0.1
+          Port: 7052
+
+  
+#   ORDERER
+Orderer: &OrdererDefaults
+
+    OrdererType: etcdraft
+
+    Addresses:
+        - orderer.bx.com:7050
+  
+    EtcdRaft:
+        Consenters:
+        - Host: orderer.bx.com
+          Port: 7050
+          ClientTLSCert: ../crypto-config/ordererOrganizations/bx.com/orderers/orderer.bx.com/tls/server.crt
+          ServerTLSCert: ../crypto-config/ordererOrganizations/bx.com/orderers/orderer.bx.com/tls/server.crt
+
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+  # Policies for Orderer
+    Policies:
+      Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+      Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+      Admins:
+          Type: ImplicitMeta  
+          Rule: "ANY Admins"
+      BlockValidation:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+
+
+Application: &ApplicationDefaults
+  
+  # Default policies
+  Policies: &ApplicationDefaultPolicies
+
+    # approveformyorg
+    LifecycleEndorsement:
+        Type: ImplicitMeta
+        Rule: "ANY Endorsement"
+    
+    # --channel-config-policy
+    Endorsement:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Endorsement"
+    Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+    Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+    Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+
+
+  Organizations:
+      - <<: *Hulk 
+      - <<: *Ironman
+ 
+
+#   CHANNEL
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+    Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+    Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+ 
+#   PROFILES
+Profiles:
+
+    MarvelGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                  - <<: *Orderer
+        Consortiums:
+            MarvelConsortium:
+                Organizations:
+                  - <<: *Hulk 
+                  - <<: *Ironman
+
+                  
+    AgeOfUltronChannel:
+      <<: *ChannelDefaults
+      Consortium: MarvelConsortium
+          
+      Application:
+          <<: *ApplicationDefaults
+          
+          Organizations:
+                  - <<: *Hulk 
+                  - <<: *Ironman
