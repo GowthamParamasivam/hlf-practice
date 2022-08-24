@@ -26,18 +26,18 @@ Organizations:
     Policies: &HulkPolicies
         Readers:
             Type: Signature
-            Rule: "OR('HulkMSP.admin', 'HulkMSP.peer', 'HulkMSP.client')"
+            Rule: "OR('HulkMSP.member')"
         Writers:
             Type: Signature
-            Rule: "OR('HulkMSP.admin', 'HulkMSP.client')"
+            Rule: "OR('HulkMSP.member')"
         Admins:
             Type: Signature
             Rule: "OR('HulkMSP.admin')"
         Endorsement:
             Type: Signature
-            Rule: "OR('HulkMSP.peer')"
+            Rule: "OR('HulkMSP.member')"
     AnchorPeers:
-        - Host: 127.0.0.1
+        - Host: peer0.hulk.bx.com
           Port: 7051
 
   - &Ironman
@@ -47,18 +47,18 @@ Organizations:
     Policies: &IronmanPolicies
         Readers:
             Type: Signature
-            Rule: "OR('IronmanMSP.admin', 'IronmanMSP.peer', 'IronmanMSP.client')"
+            Rule: "OR('IronmanMSP.member')"
         Writers:
             Type: Signature
-            Rule: "OR('IronmanMSP.admin', 'IronmanMSP.client')"
+            Rule: "OR('IronmanMSP.member')"
         Admins:
             Type: Signature
             Rule: "OR('IronmanMSP.admin')"
         Endorsement:
             Type: Signature
-            Rule: "OR('IronmanMSP.peer')"
+            Rule: "OR('IronmanMSP.member')"
     AnchorPeers:
-        - Host: 127.0.0.1
+        - Host: peer0.ironman.bx.com
           Port: 7052
 
   

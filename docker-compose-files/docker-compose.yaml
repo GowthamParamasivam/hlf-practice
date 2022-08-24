@@ -96,7 +96,7 @@ services:
       - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/msp/:/etc/hyperledger/fabric/msp
       - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/:/etc/hyperledger/fabric/tls
     depends_on:
-      - orderer.example.com
+      - orderer.bx.com
     networks:
       - basic
 
@@ -128,7 +128,7 @@ services:
     networks:
         - basic
     depends_on:
-      - orderer.example.com
+      - orderer.bx.com
       - peer0.hulk.bx.com
 
   peer0.ironman.bx.com:
@@ -145,6 +145,13 @@ services:
       - CORE_PEER_LOCALMSPID=IronmanMSP
       - CORE_PEER_ADDRESS=peer0.ironman.bx.com:7052
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlf_practice_basic
+      # Peer Specific Values
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.ironman.bx.com:7053
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7053
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ironman.bx.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ironman.bx.com:7052
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19051
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
@@ -154,7 +161,7 @@ services:
       - ./../crypto-config/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/msp/:/etc/hyperledger/fabric/msp
       - ./../crypto-config/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/:/etc/hyperledger/fabric/tls
     depends_on:
-      - orderer.example.com
+      - orderer.bx.com
     networks:
       - basic
 
@@ -186,5 +193,5 @@ services:
     networks:
         - basic
     depends_on:
-      - orderer.example.com
+      - orderer.bx.com
       - peer0.ironman.bx.com
