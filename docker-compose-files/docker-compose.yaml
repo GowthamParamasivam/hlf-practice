@@ -86,11 +86,19 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_PEER_LOCALMSPID=HulkMSP
       - CORE_PEER_ADDRESS=peer0.hulk.bx.com:7051
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlf_practice_basic
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker-compose-files_basic
+      # Peer specific values
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.hulk.bx.com:7054
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7054
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.hulk.bx.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hulk.bx.com:7051
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19052
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
       - 7051:7051
+      - 7054:7054
     volumes:
       - /var/run/:/host/var/run/
       - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/msp/:/etc/hyperledger/fabric/msp
@@ -144,7 +152,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_PEER_LOCALMSPID=IronmanMSP
       - CORE_PEER_ADDRESS=peer0.ironman.bx.com:7052
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlf_practice_basic
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker-compose-files_basic
       # Peer Specific Values
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_CHAINCODEADDRESS=peer0.ironman.bx.com:7053
@@ -156,6 +164,7 @@ services:
     command: peer node start
     ports:
       - 7052:7052
+      - 7053:7053
     volumes:
       - /var/run/:/host/var/run/
       - ./../crypto-config/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/msp/:/etc/hyperledger/fabric/msp

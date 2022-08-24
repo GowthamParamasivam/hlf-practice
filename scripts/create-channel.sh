@@ -2,7 +2,7 @@
 
 echo "===== generating the application channel ======"
 BASEDIR=$(dirname "$0")
-# echo "$BASEDIR"
-rm -Rfv $BASEDIR/../artifacts/ageofultron.tx
-configtxgen -configPath $BASEDIR/../config-files/ -outputCreateChannelTx $BASEDIR/../artifacts/ageofultron.tx -profile AgeOfUltronChannel -channelID ageofultron
+CHANNEL_FILE=ageofultron.tx
+rm -Rfv $BASEDIR/../artifacts/$CHANNEL_FILE
+configtxgen -configPath $BASEDIR/../config-files/ -outputCreateChannelTx $BASEDIR/../artifacts/$CHANNEL_FILE -profile AgeOfUltronChannel -channelID ageofultron
 echo "Done."

@@ -98,6 +98,13 @@ Orderer: &OrdererDefaults
           Type: ImplicitMeta
           Rule: "ANY Writers"
 
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: false
+    Application: &ApplicationCapabilities
+        V2_0: true
 
 Application: &ApplicationDefaults
   
@@ -151,6 +158,8 @@ Profiles:
             <<: *OrdererDefaults
             Organizations:
                   - <<: *Orderer
+            Capabilities:
+                <<: *OrdererCapabilities
         Consortiums:
             MarvelConsortium:
                 Organizations:
@@ -160,11 +169,11 @@ Profiles:
                   
     AgeOfUltronChannel:
       <<: *ChannelDefaults
-      Consortium: MarvelConsortium
-          
+      Consortium: MarvelConsortium         
       Application:
-          <<: *ApplicationDefaults
-          
+          <<: *ApplicationDefaults         
           Organizations:
                   - <<: *Hulk 
                   - <<: *Ironman
+          Capabilities:
+                <<: *ApplicationCapabilities
