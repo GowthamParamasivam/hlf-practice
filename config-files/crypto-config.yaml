@@ -40,7 +40,7 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   # Org2: See "Org1" for full specification
   # ---------------------------------------------------------------------------
-  - Name: ironman
+  - Name: Ironman
     Domain: ironman.bx.com
     EnableNodeOUs: false
     Template:
