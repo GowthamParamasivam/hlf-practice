@@ -102,7 +102,7 @@ Capabilities:
     Channel: &ChannelCapabilities
         V2_0: true
     Orderer: &OrdererCapabilities
-        V2_0: false
+        V2_0: true
     Application: &ApplicationCapabilities
         V2_0: true
 
@@ -119,7 +119,7 @@ Application: &ApplicationDefaults
     # --channel-config-policy
     Endorsement:
         Type: ImplicitMeta
-        Rule: "MAJORITY Endorsement"
+        Rule: "ANY Endorsement"
     Readers:
         Type: ImplicitMeta
         Rule: "ANY Readers"
@@ -128,7 +128,7 @@ Application: &ApplicationDefaults
         Rule: "ANY Writers"
     Admins:
         Type: ImplicitMeta
-        Rule: "MAJORITY Admins"
+        Rule: "ANY Admins"
 
 
   Organizations:
@@ -147,7 +147,7 @@ Channel: &ChannelDefaults
         Rule: "ANY Writers"
     Admins:
         Type: ImplicitMeta
-        Rule: "MAJORITY Admins"
+        Rule: "ANY Admins"
  
 #   PROFILES
 Profiles:

@@ -14,16 +14,16 @@
 
 ## Step 4: Approving Chaincode, Package Id to be changed accordingly
 
-`peer lifecycle chaincode approveformyorg -o orderer.bx.com:7050 --ordererTLSHostnameOverride orderer.bx.com --channelID ageofultron --name fabcar --version 1.0 --package-id fabcar_1.0:2eedd5f43075453ce6691a984967e378cacd073ca0f51756d93482f319766787 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}"`
+`peer lifecycle chaincode approveformyorg -o orderer.bx.com:7050 --ordererTLSHostnameOverride orderer.bx.com --channelID ageofultron --name fabcar --version 1.0 --package-id fabcar_1.0:2eedd5f43075453ce6691a984967e378cacd073ca0f51756d93482f319766787 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --init-required`
 
 ## Step 5: Checking CommitReadiness of the chaincode
 
-`peer lifecycle chaincode checkcommitreadiness --channelID ageofultron --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --output json`
+`peer lifecycle chaincode checkcommitreadiness --channelID ageofultron --init-required --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --output json`
 
 
 ## Step 6: Committing Chaincode
 
-`peer lifecycle chaincode commit -o orderer.bx.com:7050 --channelID ageofultron --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}"`
+`peer lifecycle chaincode commit -o orderer.bx.com:7050 --channelID ageofultron --init-required --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}"`
 
 ## Step 7: Querying commited status
 
@@ -31,12 +31,4 @@
 
 ## Step 8: Invoke chaincode - query
 
-`peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -C ageofultron -n fabcar -c '{"function":"initLedger","Args":[]}'`
-
-
-
-192.168.1.110
-
-curl 192.168.1.110:2375/v1.38/containers/json
-
-
+`peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -C ageofultron -n fabcar -c '{"function":"initLedger","Args":[]}' --isInit`

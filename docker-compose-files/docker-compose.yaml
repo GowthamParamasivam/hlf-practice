@@ -46,7 +46,7 @@ services:
 
   orderer.bx.com:
     container_name: orderer.bx.com
-    image: hyperledger/fabric-orderer:2.2
+    image: hyperledger/fabric-orderer:2.4
     environment:
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -75,7 +75,7 @@ services:
 
   peer0.hulk.bx.com:
     container_name: peer0.hulk.bx.com
-    image: hyperledger/fabric-peer:2.2
+    image: hyperledger/fabric-peer:2.4
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.hulk.bx.com
@@ -94,6 +94,11 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.hulk.bx.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hulk.bx.com:7051
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19052
+      # Ledger configuration
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=hulk-couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
@@ -105,12 +110,13 @@ services:
       - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/:/etc/hyperledger/fabric/tls
     depends_on:
       - orderer.bx.com
+      - hulk-couchdb
     networks:
       - basic
 
   hulk-cli:
     container_name: hulk-cli
-    image: hyperledger/fabric-tools:2.2
+    image: hyperledger/fabric-tools:2.4
     tty: true
     environment:
       - GOPATH=/opt/gopath
@@ -141,7 +147,7 @@ services:
 
   peer0.ironman.bx.com:
     container_name: peer0.ironman.bx.com
-    image: hyperledger/fabric-peer:2.2
+    image: hyperledger/fabric-peer:2.4
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.ironman.bx.com
@@ -160,6 +166,11 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ironman.bx.com:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ironman.bx.com:7052
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19051
+      # Ledger configuration
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=ironman-couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
@@ -171,12 +182,13 @@ services:
       - ./../crypto-config/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/:/etc/hyperledger/fabric/tls
     depends_on:
       - orderer.bx.com
+      - ironman-couchdb
     networks:
       - basic
 
   ironman-cli:
     container_name: ironman-cli
-    image: hyperledger/fabric-tools:2.2
+    image: hyperledger/fabric-tools:2.4
     tty: true
     environment:
       - GOPATH=/opt/gopath
@@ -204,3 +216,25 @@ services:
     depends_on:
       - orderer.bx.com
       - peer0.ironman.bx.com
+  
+  hulk-couchdb:
+    container_name: hulk-couchdb
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 5984:5984
+    networks:
+      - basic
+  
+  ironman-couchdb:
+    container_name: ironman-couchdb
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 5985:5984
+    networks:
+      - basic
