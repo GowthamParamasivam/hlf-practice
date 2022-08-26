@@ -29,6 +29,10 @@
 
 `peer lifecycle chaincode querycommitted --channelID ageofultron --name fabcar --cafile "${ORDERER_TLS_CA}"`
 
-## Step 8: Invoke chaincode - query
+## Step 8: Invoke chaincode- initialize
 
 `peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -C ageofultron -n fabcar -c '{"function":"initLedger","Args":[]}' --isInit`
+
+
+## Step 9: Query Chaincode -should see response
+`peer chaincode query -C ageofultron -n fabcar -c '{"Args":["queryAllCars"]}'`
