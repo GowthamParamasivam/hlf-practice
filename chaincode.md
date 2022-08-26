@@ -36,3 +36,5 @@
 
 ## Step 9: Query Chaincode -should see response
 `peer chaincode query -C ageofultron -n fabcar -c '{"Args":["queryAllCars"]}'`
+
+`peer chaincode query -C ageofultron -n fabcar -c '{"Args":["queryCar","CAR0"]}'`
