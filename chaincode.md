@@ -14,24 +14,26 @@
 
 ## Step 4: Approving Chaincode, Package Id to be changed accordingly
 
-`peer lifecycle chaincode approveformyorg -o orderer.bx.com:7050 --ordererTLSHostnameOverride orderer.bx.com --channelID ageofultron --name fabcar --version 1.0 --package-id fabcar_1.0:2eedd5f43075453ce6691a984967e378cacd073ca0f51756d93482f319766787 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --init-required`
+`peer lifecycle chaincode approveformyorg -o orderer.bx.com:7050 --ordererTLSHostnameOverride orderer.bx.com --channelID ageofultron --name fabcar --version 1.0 --package-id fabcar_1.0:2eedd5f43075453ce6691a984967e378cacd073ca0f51756d93482f319766787 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --init-required --signature-policy "AND ('HulkMSP.member','IronmanMSP.member')"`
 
+
+`peer lifecycle chaincode queryapproved -C ageofultron -n fabcar --sequence 1 --output json`
 ## Step 5: Checking CommitReadiness of the chaincode
 
-`peer lifecycle chaincode checkcommitreadiness --channelID ageofultron --init-required --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --output json`
+`peer lifecycle chaincode checkcommitreadiness --channelID ageofultron --init-required --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --signature-policy "AND ('HulkMSP.member','IronmanMSP.member')" --output json`
 
 
 ## Step 6: Committing Chaincode
 
-`peer lifecycle chaincode commit -o orderer.bx.com:7050 --channelID ageofultron --init-required --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}"`
+`peer lifecycle chaincode commit -o orderer.bx.com:7050 --channelID ageofultron --init-required --name fabcar --version 1.0 --sequence 1 --tls --cafile "${ORDERER_TLS_CA}" --signature-policy "AND ('HulkMSP.member','IronmanMSP.member')" --peerAddresses peer0.hulk.bx.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/ca.crt --peerAddresses peer0.ironman.bx.com:7052 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/ca.crt`
 
 ## Step 7: Querying commited status
 
 `peer lifecycle chaincode querycommitted --channelID ageofultron --name fabcar --cafile "${ORDERER_TLS_CA}"`
 
-## Step 8: Invoke chaincode- initialize
+## Step 8: Invoke chaincode- initialize - dont use from cli when chaincode level endorsement policy is set
 
-`peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -C ageofultron -n fabcar -c '{"function":"initLedger","Args":[]}' --isInit`
+`peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -C ageofultron -n fabcar -c '{"function":"initLedger","Args":[]}' --isInit --peerAddresses peer0.hulk.bx.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/ca.crt --peerAddresses peer0.ironman.bx.com:7052 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/ca.crt`
 
 
 ## Step 9: Query Chaincode -should see response
