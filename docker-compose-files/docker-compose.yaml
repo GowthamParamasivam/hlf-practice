@@ -10,39 +10,62 @@ networks:
 
 services:
 
-  # ca.hulk.bx.com:
-  #   image: hyperledger/fabric-ca:1.5
-  #   tty: true
-  #   environment:
-  #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-  #     - FABRIC_CA_SERVER_CA_NAME=ca.hulk.bx.com
-  #     - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.hulk.bx.com-cert.pem
-  #     - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
-  #   ports:
-  #     - "7054:7054"
-  #   command: /bin/bash
-  #   volumes:
-  #     - ../crypto-config/peerOrganizations/hulk.bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
-  #   container_name: ca.hulk.bx.com
-  #   networks:
-  #     - basic
+  ca.hulk.bx.com:
+    image: hyperledger/fabric-ca:latest
+    tty: true
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.hulk.bx.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.hulk.bx.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
+      - FABRIC_CA_SERVER_PORT=9054
+    ports:
+      - "9054:9054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/peerOrganizations/hulk.bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../certificate-authority/ca-hulk:/etc/hyperledger/fabric-ca-server
+    container_name: ca.hulk.bx.com
+    networks:
+      - basic
 
-  # ca.ironman.bx.com:
-  #   image: hyperledger/fabric-ca:1.5
-  #   tty: true
-  #   environment:
-  #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-  #     - FABRIC_CA_SERVER_CA_NAME=ca.ironman.bx.com
-  #     - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ironman.bx.com-cert.pem
-  #     - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
-  #   ports:
-  #     - "7055:7054"
-  #   command: /bin/bash
-  #   volumes:
-  #     - ../crypto-config/peerOrganizations/ironman.bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
-  #   container_name: ca.ironman.bx.com
-  #   networks:
-  #     - basic
+  ca.ironman.bx.com:
+    image: hyperledger/fabric-ca:latest
+    tty: true
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.ironman.bx.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ironman.bx.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
+      - FABRIC_CA_SERVER_PORT=9055
+    ports:
+      - "9055:9055"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/peerOrganizations/ironman.bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../certificate-authority/ca-ironman:/etc/hyperledger/fabric-ca-server
+    container_name: ca.ironman.bx.com
+    networks:
+      - basic
+
+  ca.bx.com:
+    image: hyperledger/fabric-ca:latest
+    tty: true
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.bx.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.bx.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
+      - FABRIC_CA_SERVER_PORT=9056
+    ports:
+      - "9056:9056"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/ordererOrganizations/bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../certificate-authority/ca-orderer:/etc/hyperledger/fabric-ca-server
+    container_name: ca.bx.com
+    networks:
+      - basic
 
   orderer.bx.com:
     container_name: orderer.bx.com

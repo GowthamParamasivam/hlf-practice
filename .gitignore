@@ -1,3 +1,6 @@
 crypto-config/*
 artifacts/*
 artifacts/genesis.block
+certificate-authority/ca-hulk/*
+certificate-authority/ca-ironman/*
+certificate-authority/ca-orderer/*
