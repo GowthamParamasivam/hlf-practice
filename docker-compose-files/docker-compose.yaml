@@ -117,6 +117,8 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.hulk.bx.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hulk.bx.com:7051
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19052
+      - CORE_PEER_GOSSIP_USELEADERELECTION=false
+      - CORE_PEER_GOSSIP_ORGLEADER=true
       # Ledger configuration
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=hulk-couchdb:5984
@@ -134,6 +136,49 @@ services:
     depends_on:
       - orderer.bx.com
       - hulk-couchdb
+    networks:
+      - basic
+
+  peer1.hulk.bx.com:
+    container_name: peer1.hulk.bx.com
+    image: hyperledger/fabric-peer:2.4
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.hulk.bx.com
+      - CORE_PEER_NETWORKID=test
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_LOCALMSPID=HulkMSP
+      - CORE_PEER_ADDRESS=peer1.hulk.bx.com:7061
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=docker-compose-files_basic
+      # Peer specific values
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7061
+      - CORE_PEER_CHAINCODEADDRESS=peer1.hulk.bx.com:7084
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7084
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.hulk.bx.com:7061
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.hulk.bx.com:7051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=false
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19052
+      # Ledger configuration
+      # - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=hulk-couchdb:5984
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7061:7061
+      - 7084:7084
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer1.hulk.bx.com/msp/:/etc/hyperledger/fabric/msp
+      - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer1.hulk.bx.com/tls/:/etc/hyperledger/fabric/tls
+    depends_on:
+      - orderer.bx.com
     networks:
       - basic
 
@@ -167,6 +212,37 @@ services:
     depends_on:
       - orderer.bx.com
       - peer0.hulk.bx.com
+  
+  hulk-cli-peer1:
+    container_name: hulk-cli-peer1
+    image: hyperledger/fabric-tools:2.4
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer1.hulk.bx.com:7061
+      - CORE_PEER_LOCALMSPID=HulkMSP
+      - CORE_CHAINCODE_KEEPALIVE=10
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer1.hulk.bx.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer1.hulk.bx.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer1.hulk.bx.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/users/Admin@hulk.bx.com/msp
+      - ORDERER_TLS_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/bx.com/orderers/orderer.bx.com/msp/tlscacerts/tlsca.bx.com-cert.pem
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../chaincodes:/opt/gopath/src/github.com/chaincode
+      - ./../crypto-config/:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ./../artifacts/:/etc/hyperledger/artifacts
+    networks:
+        - basic
+    depends_on:
+      - orderer.bx.com
+      - peer1.hulk.bx.com
 
   peer0.ironman.bx.com:
     container_name: peer0.ironman.bx.com
