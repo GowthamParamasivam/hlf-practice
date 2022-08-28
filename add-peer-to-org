@@ -1,0 +1,17 @@
+# Adding peer to the organisation (hulk)
+
+## Step 1: Edit the crypto-config.yaml file
+
+Edit the template section by increasing the count
+
+## Step 2: Extend the crypto materials using cryptogen
+
+`cryptogen extend --config ../config-files/crypto-config.yaml`
+
+## Step 3: Update the docker compose file for the new peer and peer cli
+
+## Step 4: add the peer to the channel using peer channel join command
+
+## Step 5: now install and start the chaincode
+
+
