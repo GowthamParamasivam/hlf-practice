@@ -12,6 +12,8 @@ Edit the template section by increasing the count
 
 ## Step 4: add the peer to the channel using peer channel join command
 
-## Step 5: now install and start the chaincode
+## Step 5: now install and invoke the chaincode, now it should work like as normal
+
+
 
 
