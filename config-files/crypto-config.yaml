@@ -50,3 +50,15 @@ PeerOrgs:
           - "127.0.0.1"
     Users:
       Count: 1
+
+
+  - Name: Spiderman
+    Domain: spiderman.bx.com
+    EnableNodeOUs: false
+    Template:
+      Count: 1
+      SANS:
+          - "localhost"
+          - "127.0.0.1"
+    Users:
+      Count: 1

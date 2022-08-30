@@ -1,0 +1,18 @@
+# Adding new org (spiderman) to the network
+
+## Step 1: Edit the crypto-config.yaml file
+
+Edit the file to add the new org
+
+## Step 2: Extend the crypto materials using cryptogen
+
+`cryptogen extend --config ./config-files/crypto-config.yaml`
+
+## Step3: Edit the docker compose files
+
+## Step4: generate the config materials for the spiderman org, input for this file is configtx.yaml it can be a separate file from the genesis file
+`configtxgen -printOrg SpidermanMSP > ../spiderman.json`
+
+Follow below link steps
+
+https://hyperledger-fabric.readthedocs.io/en/release-2.2/channel_update_tutorial.html

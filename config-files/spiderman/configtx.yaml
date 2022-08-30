@@ -1,0 +1,23 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+---
+Organizations:
+        Name: SpidermanMSP
+        ID: SpidermanMSP
+        MSPDir: ../../crypto-config/peerOrganizations/spiderman.bx.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('SpidermanMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('SpidermanMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('SpidermanMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('SpidermanMSP.peer')"
