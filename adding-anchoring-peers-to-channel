@@ -1,0 +1,7 @@
+# Adding anchor peers to the channel
+
+## Step 1: Fetch the latest config block from the channel
+
+## Step 2: Edit the config and prepare the pb file for transaction
+
+`https://hyperledger-fabric.readthedocs.io/en/release-2.2/create_channel/create_channel.html?highlight=anchor%20peer%20update#set-anchor-peers`
