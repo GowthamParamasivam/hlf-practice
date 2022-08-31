@@ -9,7 +9,7 @@
     "memberOnlyWrite": true
     },
     {
-    "name": "hulkMSPPrivateCollection",
+    "name": "HulkMSPPrivateCollection",
     "policy": "OR('HulkMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 1,
@@ -21,7 +21,7 @@
     }
     },
     {
-    "name": "ironmanMSPPrivateCollection",
+    "name": "IronmanMSPPrivateCollection",
     "policy": "OR('IronmanMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 1,
