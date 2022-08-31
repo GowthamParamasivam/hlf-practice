@@ -5,3 +5,11 @@
 ## Step 2: Edit the config and prepare the pb file for transaction
 
 `https://hyperledger-fabric.readthedocs.io/en/release-2.2/create_channel/create_channel.html?highlight=anchor%20peer%20update#set-anchor-peers`
+
+`configtxgen -outputAnchorPeersUpdate anchor_peer_tx.pb -profile AgeOfUltronChannel -asOrg Hulk -channelID ageofultron -configPath ./`
+
+`configtxgen -outputAnchorPeersUpdate anchor_peer_tx_i.pb -profile AgeOfUltronChannel -asOrg Ironman -channelID ageofultron -configPath ./`
+
+`peer channel update -f anchor_peer_tx.pb -c ageofultron -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}"`
+
+`peer channel update -f anchor_peer_tx_i.pb -c ageofultron -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}"`

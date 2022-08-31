@@ -31,7 +31,7 @@
 
 `peer lifecycle chaincode querycommitted --channelID ageofultron --name fabcar --cafile "${ORDERER_TLS_CA}"`
 
-## Step 8: Invoke chaincode- initialize - dont use from cli when chaincode level endorsement policy is set
+## Step 8: Invoke chaincode- initialize 
 
 `peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -C ageofultron -n fabcar -c '{"function":"initLedger","Args":[]}' --isInit --peerAddresses peer0.hulk.bx.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/ca.crt --peerAddresses peer0.ironman.bx.com:7052 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/ca.crt`
 
