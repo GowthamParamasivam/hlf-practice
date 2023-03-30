@@ -1,0 +1,197 @@
+#
+# Copyright IBM Corp All Rights Reserved
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+version: '2'
+
+networks:
+  basic:
+
+services:
+
+  ca.hulk.bx.com:
+    image: hyperledger/fabric-ca:1.5
+    tty: true
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.hulk.bx.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.hulk.bx.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/peerOrganizations/hulk.bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.hulk.bx.com
+    networks:
+      - basic
+
+  ca.ironman.bx.com:
+    image: hyperledger/fabric-ca:1.5
+    tty: true
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.ironman.bx.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ironman.bx.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
+    ports:
+      - "7055:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../crypto-config/peerOrganizations/ironman.bx.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.ironman.bx.com
+    networks:
+      - basic
+
+  orderer.bx.com:
+    container_name: orderer.bx.com
+    image: hyperledger/fabric-orderer:2.2
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+      - ../artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ../crypto-config/ordererOrganizations/bx.com/orderers/orderer.bx.com/msp/:/var/hyperledger/orderer/msp
+      - ../crypto-config/ordererOrganizations/bx.com/orderers/orderer.bx.com/tls/:/var/hyperledger/orderer/tls
+    networks:
+      - basic
+
+  peer0.hulk.bx.com:
+    container_name: peer0.hulk.bx.com
+    image: hyperledger/fabric-peer:2.2
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.hulk.bx.com
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_LOCALMSPID=HulkMSP
+      - CORE_PEER_ADDRESS=peer0.hulk.bx.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlf_practice_basic
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7051:7051
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/msp/:/etc/hyperledger/fabric/msp
+      - ./../crypto-config/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/:/etc/hyperledger/fabric/tls
+    depends_on:
+      - orderer.bx.com
+    networks:
+      - basic
+
+  hulk-cli:
+    container_name: hulk-cli
+    image: hyperledger/fabric-tools:2.2
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.hulk.bx.com:7051
+      - CORE_PEER_LOCALMSPID=HulkMSP
+      - CORE_CHAINCODE_KEEPALIVE=10
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/peers/peer0.hulk.bx.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/hulk.bx.com/users/Admin@hulk.bx.com/msp
+      - ORDERER_TLS_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/bx.com/orderers/orderer.bx.com/msp/tlscacerts/tlsca.bx.com-cert.pem
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../chaincodes:/opt/gopath/src/github.com/chaincode
+      - ./../crypto-config/:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ./../artifacts/:/etc/hyperledger/artifacts
+    networks:
+        - basic
+    depends_on:
+      - orderer.bx.com
+      - peer0.hulk.bx.com
+
+  peer0.ironman.bx.com:
+    container_name: peer0.ironman.bx.com
+    image: hyperledger/fabric-peer:2.2
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.ironman.bx.com
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_LOCALMSPID=IronmanMSP
+      - CORE_PEER_ADDRESS=peer0.ironman.bx.com:7052
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlf_practice_basic
+      # Peer Specific Values
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.ironman.bx.com:7053
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7053
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ironman.bx.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ironman.bx.com:7052
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19051
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7052:7052
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../crypto-config/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/msp/:/etc/hyperledger/fabric/msp
+      - ./../crypto-config/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/:/etc/hyperledger/fabric/tls
+    depends_on:
+      - orderer.bx.com
+    networks:
+      - basic
+
+  ironman-cli:
+    container_name: ironman-cli
+    image: hyperledger/fabric-tools:2.2
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.ironman.bx.com:7052
+      - CORE_PEER_LOCALMSPID=IronmanMSP
+      - CORE_CHAINCODE_KEEPALIVE=10
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/users/Admin@ironman.bx.com/msp
+      - ORDERER_TLS_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/bx.com/orderers/orderer.bx.com/msp/tlscacerts/tlsca.bx.com-cert.pem
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../chaincodes:/opt/gopath/src/github.com/chaincode
+      - ./../crypto-config/:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ./../artifacts/:/etc/hyperledger/artifacts
+    networks:
+        - basic
+    depends_on:
+      - orderer.bx.com
+      - peer0.ironman.bx.com

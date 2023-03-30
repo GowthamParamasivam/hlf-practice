@@ -21,7 +21,6 @@ peer lifecycle chaincode install mycc.tar.gz
 ```bash 
 peer lifecycle chaincode queryinstalled
 ```
-<br>
 
 ## 5. Approve Chaincode
 
@@ -47,8 +46,20 @@ peer lifecycle chaincode checkcommitreadiness --channelID ageofultron --name myc
 peer lifecycle chaincode commit -o orderer.bx.com:7050 --channelID ageofultron --name mycc --version 1.0 --sequence 1 --init-required --tls --cafile "${ORDERER_TLS_CA}" --peerAddresses peer0.hulk.bx.com:7051 --tlsRootCertFiles "${CORE_PEER_TLS_CERT_FILE}" --peerAddresses peer0.ironman.bx.com:7052 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/server.crt
 ```
 
-## 9. Qruery Commited Chaincodes
+## 9. Query Commited Chaincodes
 
 ```bash
 peer lifecycle chaincode querycommitted --channelID ageofultron --name mycc
+```
+
+## 10. Initialize the Chaincode 
+
+```bash
+peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -n mycc -c '{"Args":["InitLedger"]}' -C ageofultron --peerAddresses peer0.hulk.bx.com:7051 --tlsRootCertFiles "${CORE_PEER_TLS_CERT_FILE}" --peerAddresses peer0.ironman.bx.com:7052 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/ironman.bx.com/peers/peer0.ironman.bx.com/tls/server.crt --isInit
+```
+
+## 11. Query the chaincode
+
+```bash
+peer chaincode invoke -o orderer.bx.com:7050 --tls --cafile "${ORDERER_TLS_CA}" -n mycc -c '{"Args":["GetAllAssets"]}' -C ageofultron
 ```
