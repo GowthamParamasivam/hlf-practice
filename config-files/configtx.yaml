@@ -61,7 +61,16 @@ Organizations:
         - Host: peer0.ironman.bx.com
           Port: 7052
 
-  
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+
+    Orderer: &OrdererCapabilities
+        V2_0: true
+
+    Application: &ApplicationCapabilities
+        V2_0: true
+
 #   ORDERER
 Orderer: &OrdererDefaults
 
@@ -98,49 +107,59 @@ Orderer: &OrdererDefaults
           Type: ImplicitMeta
           Rule: "ANY Writers"
 
+    Capabilities:
+        <<: *OrdererCapabilities
 
 Application: &ApplicationDefaults
   
   # Default policies
-  Policies: &ApplicationDefaultPolicies
+    Policies: &ApplicationDefaultPolicies
 
-    # approveformyorg
-    LifecycleEndorsement:
-        Type: ImplicitMeta
-        Rule: "ANY Endorsement"
-    
-    # --channel-config-policy
-    Endorsement:
-        Type: ImplicitMeta
-        Rule: "MAJORITY Endorsement"
-    Readers:
-        Type: ImplicitMeta
-        Rule: "ANY Readers"
-    Writers:
-        Type: ImplicitMeta
-        Rule: "ANY Writers"
-    Admins:
-        Type: ImplicitMeta
-        Rule: "MAJORITY Admins"
+        # approveformyorg
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "ANY Endorsement"
+        
+        # --channel-config-policy
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
 
 
-  Organizations:
-      - <<: *Hulk 
-      - <<: *Ironman
- 
+    Organizations:
+        - <<: *Hulk 
+        - <<: *Ironman
+
+    Capabilities:
+        <<: *ApplicationCapabilities 
 
 #   CHANNEL
 Channel: &ChannelDefaults
-  Policies:
-    Readers:
-        Type: ImplicitMeta
-        Rule: "ANY Readers"
-    Writers:
-        Type: ImplicitMeta
-        Rule: "ANY Writers"
-    Admins:
-        Type: ImplicitMeta
-        Rule: "MAJORITY Admins"
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+    Capabilities:
+        <<: *ChannelCapabilities
  
 #   PROFILES
 Profiles:
